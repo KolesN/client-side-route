@@ -72,11 +72,6 @@ server.use((req, res, next) => {
   next()
 })
 
-// server.use('/api/', (req, res) => {
-//   res.status(404)
-//   res.end()
-// })
-
 const [htmlStart, htmlEnd] = Html({
   body: 'separator',
   title: 'Skillcrucial'
@@ -95,6 +90,12 @@ server.get('/', (req, res) => {
 server.get('/api/v1/users', async (req, res) => {
   const result = await readUsers()
   res.json(result)
+})
+
+server.get('/api/v1/test/cookies', async (req, res) => {
+  console.log(req.cookies)
+  res.cookie('serverCookie', 'test', { maxAge: 100000, httpOnly: true })
+  res.json({ status: req.cookies })
 })
 
 server.post('/api/v1/users', async (req, res) => {
@@ -148,6 +149,11 @@ server.get('/*', (req, res) => {
     res.end()
   })
 })
+
+// server.use('/api/', (req, res) => {
+//   res.status(404)
+//   res.end()
+// })
 
 const app = server.listen(port)
 

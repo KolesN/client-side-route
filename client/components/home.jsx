@@ -1,5 +1,6 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Route } from 'react-router-dom'
+import Cookies from 'universal-cookie'
 import dashMain from './dash-main'
 import dashProfile from './dash-profile'
 import dashboard from './dashboard'
@@ -9,6 +10,12 @@ import Head from './head'
 const Home = () => {
   const [counter, setCounterNew] = useState(0)
   const onClick = () => setCounterNew(counter + 1)
+  const cookies = new Cookies()
+  const date = new Date()
+  useEffect(() => {
+    cookies.set('created', date.toString(), { path: '/' })
+    fetch('/api/v1/test/cookies')
+  })
 
   return (
     <div>

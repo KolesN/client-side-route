@@ -18,7 +18,6 @@ const Input = (props) => {
 const Button = (props) => {
   const onClick = (e) => {
     history.push(`https://api.github.com/users/${e.target.value}/repos`)
-    
   }
   return (
     <div>
@@ -39,7 +38,7 @@ const Search = () => {
       <Head title="test" />
       <Input onChange={onInputChange} />
       <Button username={username} />
-      </div>
+    </div>
   )
 }
 
