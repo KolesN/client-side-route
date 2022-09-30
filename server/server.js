@@ -98,6 +98,11 @@ server.get('/api/v1/test/cookies', async (req, res) => {
   res.json({ status: req.cookies })
 })
 
+server.post('/api/v1/auth', async (req, res) => {
+  console.log(req.body)
+  res.json({ status: 'ok' })
+})
+
 server.post('/api/v1/users', async (req, res) => {
   const list = await readUsers()
   const ID = list[list.length - 1].id + 1

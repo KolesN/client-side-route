@@ -5,6 +5,7 @@ import dashMain from './dash-main'
 import dashProfile from './dash-profile'
 import dashboard from './dashboard'
 import Head from './head'
+import LoginForm from './login'
 // import wave from '../assets/images/wave.jpg'
 
 const Home = () => {
@@ -12,15 +13,17 @@ const Home = () => {
   const onClick = () => setCounterNew(counter + 1)
   const cookies = new Cookies()
   const date = new Date()
+
   useEffect(() => {
     cookies.set('created', date.toString(), { path: '/' })
     fetch('/api/v1/test/cookies')
+    sessionStorage.setItem('newItemToSession', date)
   })
 
   return (
     <div>
       <Head title="Home" />
-      <img alt="wave" src="images/wave.jpg" />
+      {/* <img alt="wave" src="images/wave.jpg" /> */}
       <button type="button" onClick={onClick}>
         updateCounter
       </button>
@@ -34,6 +37,7 @@ const Home = () => {
           <Route exact path="/dashboard/profile/:user" component={dashProfile} />
         </div>
       </div>
+      <LoginForm />
     </div>
   )
 }
