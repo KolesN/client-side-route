@@ -6,15 +6,24 @@ import { renderToStaticNodeStream } from 'react-dom/server'
 import React from 'react'
 import axios from 'axios'
 
+import mongooseService from './services/mongoose'
 import cookieParser from 'cookie-parser'
 import config from './config'
 import Html from '../client/html'
+import User from './model/User.model'
 
 const { readFile, writeFile, unlink } = require('fs').promises
 
 require('colors')
 
-let Root
+let Root = ''
+mongooseService.connect('mongodb://127.0.0.1:27017/auth')
+
+const user = new User({
+  email: 'tes12..t@gmail.com',
+  password: 'asdflp'
+})
+user.save()
 try {
   // eslint-disable-next-line import/no-unresolved
   Root = require('../dist/assets/js/ssr/root.bundle').default
