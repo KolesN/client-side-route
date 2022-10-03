@@ -5,12 +5,18 @@ import sockjs from 'sockjs'
 import { renderToStaticNodeStream } from 'react-dom/server'
 import React from 'react'
 import axios from 'axios'
+import cookieParser from 'cookie-parser'
+import passport from 'passport'
+import jwt from 'jsonwebtoken'
+
 
 import mongooseService from './services/mongoose'
-import cookieParser from 'cookie-parser'
+import passportJWT from './services/passport'
+
 import config from './config'
 import Html from '../client/html'
 import User from './model/User.model'
+
 
 const { readFile, writeFile, unlink } = require('fs').promises
 
@@ -19,11 +25,6 @@ require('colors')
 let Root = ''
 mongooseService.connect('mongodb://127.0.0.1:27017/auth')
 
-const user = new User({
-  email: 'tes12..t@gmail.com',
-  password: 'asdflp'
-})
-user.save()
 try {
   // eslint-disable-next-line import/no-unresolved
   Root = require('../dist/assets/js/ssr/root.bundle').default
@@ -67,6 +68,7 @@ const readUsers = async () => {
 
 const middleware = [
   cors(),
+  passport.initialize(),
   express.static(path.resolve(__dirname, '../dist/assets')),
   express.urlencoded({ limit: '50mb', extended: true, parameterLimit: 50000 }),
   express.json({ limit: '50mb', extended: true }),
@@ -74,6 +76,9 @@ const middleware = [
 ]
 
 middleware.forEach((it) => server.use(it))
+
+
+passport.use('jwt', passportJWT.jwt)
 
 server.use((req, res, next) => {
   res.set('x-skillcrucial-user', 'e7aec42d-a611-47cc-a5c8-93e75ce35f1c')
@@ -109,7 +114,14 @@ server.get('/api/v1/test/cookies', async (req, res) => {
 
 server.post('/api/v1/auth', async (req, res) => {
   console.log(req.body)
-  res.json({ status: 'ok' })
+  try {
+    const user = await User.findAndValidateUser(req.body)
+    const payload = { uid: user.id }
+    const token = jwt.sign(payload, config.secret, { expiresIn: '48h' })
+    res.json({ status: 'ok' })
+  } catch (err) {
+      res.json({status: 'Error', err})
+  }
 })
 
 server.post('/api/v1/users', async (req, res) => {
