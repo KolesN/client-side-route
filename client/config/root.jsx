@@ -6,17 +6,18 @@ import { Switch, Route, Redirect, StaticRouter } from 'react-router-dom'
 import store, { history } from '../redux'
 
 import Home from '../components/home'
-import DummyView from '../components/dummy-view'
+// import DummyView from '../components/dummy-view'
 import NotFound from '../components/404'
 // import Search from '../components/github-search'
 
 import Startup from './startup'
+import PrivateComp from '../components/private-route'
 
 const OnlyAnonymousRoute = ({ component: Component, ...rest }) => {
   const user = useSelector((state) => state.auth.user)
   const token = useSelector((state) => state.token)
   const func = (props) => {
-    if (!!user && !!user.name && !!token) <Redirect to={{ pathname: '/' }} />
+    if (!!user && !!user.name && !!token) <Redirect to={{ pathname: '/private' }} />
     return <Component {...props} />
   }
   return <Route {...rest} render={func} />
@@ -53,8 +54,8 @@ const RootComponent = (props) => {
             <Route exact path="/dashboard" component={Home} />
             <Route exact path="/dashboard/main" component={Home} />
             <Route exact path="/dashboard/profile/:user" component={Home} />
-            <PrivateRoute exact path="/hidden-route" component={DummyView} />
-            <OnlyAnonymousRoute exact path="/anonymous-route" component={DummyView} />
+            <PrivateRoute exact path="/private" component={PrivateComp} />
+            <OnlyAnonymousRoute exact path="/anonymous-route" component={PrivateComp} />
 
             <Route component={NotFound} />
           </Switch>

@@ -12,6 +12,7 @@ import jwt from 'jsonwebtoken'
 
 import mongooseService from './services/mongoose'
 import passportJWT from './services/passport'
+import auth from './middleware/auth'
 
 import config from './config'
 import Html from '../client/html'
@@ -112,13 +113,33 @@ server.get('/api/v1/test/cookies', async (req, res) => {
   res.json({ status: req.cookies })
 })
 
+server.get('/api/v1/user-info', auth(['admin']), async (req, res) => {
+  res.json({ status: 'ok' })
+})
+
+server.get('/api/v1/auth', async (req, res) => {
+  try {
+    const jwtUser = jwt.verify(req.cookies.token, config.secret)
+    const user = await User.findById(jwtUser.uid)
+
+    const payload = { uid: user.id }
+    const token = jwt.sign(payload, config.secret, { expiresIn: '48h' })
+    delete user.password
+    res.cookie('token', token, { maxAge: 1000 * 60 * 60 * 48 })
+    res.json({ status: 'ok', token, user })
+  } catch (err) {
+    res.json({ status: 'Error', err })
+  }
+})
+
 server.post('/api/v1/auth', async (req, res) => {
-  console.log(req.body)
   try {
     const user = await User.findAndValidateUser(req.body)
     const payload = { uid: user.id }
     const token = jwt.sign(payload, config.secret, { expiresIn: '48h' })
-    res.json({ status: 'ok' })
+    delete user.password
+    res.cookie('token', token, { maxAge: 1000 * 60 * 60 * 48})
+    res.json({ status: 'ok', token, user })
   } catch (err) {
       res.json({status: 'Error', err})
   }
