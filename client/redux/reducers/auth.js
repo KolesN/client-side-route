@@ -1,4 +1,5 @@
 import Cookies from 'universal-cookie'
+// eslint-disable-next-line import/no-named-as-default
 import history from '../index'
 
 const UPDATE_LOGIN = 'UPDATE_LOGIN'
